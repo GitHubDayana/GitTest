@@ -11,12 +11,12 @@ pipeline {
         }
         stage('Test Stage') {
             steps {
-                bat 'dotnet test C:\\ProgramData\Jenkins\\.jenkins\\workspace\\DemoProject\\DotNetProject\\DotNetProject.csproj'
+                bat 'dotnet test C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\DemoProject\\DotNetProject\\DotNetProject.csproj'
             }
         }
         stage("Release Stage") {
             steps {
-                bat 'dotnet build C:\ProgramData\Jenkins\.jenkins\workspace\DemoProject\DotNetProject\DotNetProject.csproj /p:PublishProfile=" C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\DemoProject\\DotNetProject\\Properties\\PublishProfiles\\FolderProfile.pubxml" /p:Platform="Any CPU" /p:DeployOnBuild=true /m'
+                bat 'dotnet build C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\DemoProject\\DotNetProject\\DotNetProject.csproj /p:PublishProfile=" C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\DemoProject\\DotNetProject\\Properties\\PublishProfiles\\FolderProfile.pubxml" /p:Platform="Any CPU" /p:DeployOnBuild=true /m'
             }
         }
         stage('Deploy Stage') {
