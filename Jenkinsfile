@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         // Define any environment variables if needed
-        DOTNET_ROOT = 'C:\Program Files\dotnet' // Adjust this path based on your environment
+        DOTNET_ROOT = 'C:\\Program Files\\dotnet' // Adjust this path based on your environment
     }
 
     stages {
