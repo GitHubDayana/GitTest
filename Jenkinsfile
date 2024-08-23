@@ -6,12 +6,12 @@ pipeline {
     stages {
         stage('Build Stage') {
             steps {
-                bat 'C:\ProgramData\Jenkins\.jenkins\workspace\DemoProject\DotNetProject\DotNetProject.csproj --configuration Release'
+                bat 'C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\DemoProject\\DotNetProject\\DotNetProject.csproj --configuration Release'
             }
         }
         stage('Test Stage') {
             steps {
-                bat 'dotnet test C:\ProgramData\Jenkins\.jenkins\workspace\DemoProject\DotNetProject\DotNetProject.csproj'
+                bat 'dotnet test C:\\ProgramData\Jenkins\\.jenkins\\workspace\\DemoProject\\DotNetProject\\DotNetProject.csproj'
             }
         }
         stage("Release Stage") {
