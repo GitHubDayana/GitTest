@@ -1,67 +1,31 @@
 pipeline {
     agent any
-
     environment {
-        // Define any environment variables if needed
-        DOTNET_ROOT = 'C:\\Program Files\\dotnet' // Adjust this path based on your environment
+        dotnet = 'C:\\Program Files\\dotnet\\dotnet.exe'
     }
-
     stages {
-        stage('Checkout') {
+        stage('Build Stage') {
             steps {
-                // Checkout the code from the repository
-                checkout scm
+                bat 'C:\ProgramData\Jenkins\.jenkins\workspace\DemoProject\DotNetProject\DotNetProject.csproj --configuration Release'
             }
         }
-        
-        stage('Restore') {
+        stage('Test Stage') {
             steps {
-                script {
-                    // Restore the .NET project dependencies
-                    sh 'dotnet restore'
-                }
+                bat 'dotnet test C:\ProgramData\Jenkins\.jenkins\workspace\DemoProject\DotNetProject\DotNetProject.csproj'
             }
         }
-        
-        stage('Build') {
+        stage("Release Stage") {
             steps {
-                script {
-                    // Build the .NET project
-                    sh 'dotnet build --configuration Release'
-                }
+                bat 'dotnet build C:\ProgramData\Jenkins\.jenkins\workspace\DemoProject\DotNetProject\DotNetProject.csproj /p:PublishProfile=" C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\DemoProject\\DotNetProject\\Properties\\PublishProfiles\\FolderProfile.pubxml" /p:Platform="Any CPU" /p:DeployOnBuild=true /m'
             }
         }
-        
-        stage('Test') {
+        stage('Deploy Stage') {
             steps {
-                script {
-                    // Run the tests
-                    sh 'dotnet test --no-build --verbosity normal'
-                }
+                //Deploy application on IIS
+                bat 'net stop "w3svc"'
+                bat '"C:\\Program Files (x86)\\IIS\\Microsoft Web Deploy V3\\msdeploy.exe" -verb:sync -source:package="%WORKSPACE%\\JenkinsWebApplicationDemo\\bin\\Debug\\net6.0\\JenkinsWebApplicationDemo.zip" -dest:auto -setParam:"IIS Web Application Name"="Demo.Web" -skip:objectName=filePath,absolutePath=".\\\\PackagDemoeTmp\\\\Web.config$" -enableRule:DoNotDelete -allowUntrusted=true'
+                bat 'net start "w3svc"'
             }
-        }
-        
-        stage('Deploy') {
-            steps {
-                script {
-                    // Publish the project to a folder
-                    sh 'dotnet publish --configuration Release --output ./publish'
-                }
-            }
-        }
-    }
-
-    post {
-        success {
-            echo 'Build and deployment succeeded!'
-        }
-        
-        failure {
-            echo 'Build or deployment failed!'
-        }
-        
-        always {
-            cleanWs()
         }
     }
 }
