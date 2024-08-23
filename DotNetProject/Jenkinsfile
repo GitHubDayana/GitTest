@@ -28,7 +28,7 @@ pipeline {
             steps {
                 // Build the .NET project
                 script {
-                    sh 'dotnet build --configuration Release'
+                    sh 'dotnet build /home/ubuntu/JenFiles/workspace/MyProject/DotNetProject/DotNetProject'
                 }
             }
         }
