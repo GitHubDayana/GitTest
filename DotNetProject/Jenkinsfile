@@ -1,75 +1,36 @@
 pipeline {
     agent any
-
     environment {
-        // Define any environment variables you need
-        DOTNET_VERSION = '6.0'
-        BUILD_DIR = 'build'
+        dotnet = 'C:\\Program Files\\dotnet\\dotnet.exe'
     }
-
     stages {
-        stage('Checkout') {
+        stage('Checkout Stage') {
             steps {
-                // Checkout the code from your source control
-                checkout scm
+                git credentialsId: '5ba5e0da-116a-47df-8e8c-639f4654358c', url: 'https://github.com/Jaydeep-007/JenkinsWebApplicationDemo.git', branch: 'main'
             }
         }
-
-        stage('Restore') {
+        stage('Build Stage') {
             steps {
-                // Restore NuGet packages
-                script {
-                    sh 'dotnet restore'
-                }
+                bat 'C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\TestPipeline\\JenkinsWebApplicationDemo.sln --configuration Release'
             }
         }
-
-        stage('Build') {
+        stage('Test Stage') {
             steps {
-                // Build the .NET project
-                script {
-                    sh 'dotnet build /home/ubuntu/JenFiles/workspace/MyProject/DotNetProject/DotNetProject'
-                }
+                bat 'dotnet test %WORKSPACE%\\TestProject1\\TestProject1.csproj'
             }
         }
-
-        stage('Test') {
+        stage("Release Stage") {
             steps {
-                // Run unit tests
-                script {
-                    sh 'dotnet test --configuration Release --no-build'
-                }
+                bat 'dotnet build %WORKSPACE%\\JenkinsWebApplicationDemo.sln /p:PublishProfile=" %WORKSPACE%\\JenkinsWebApplicationDemo\\Properties\\PublishProfiles\\FolderProfile.pubxml" /p:Platform="Any CPU" /p:DeployOnBuild=true /m'
             }
         }
-
-        stage('Publish') {
+        stage('Deploy Stage') {
             steps {
-                // Publish the application
-                script {
-                    sh 'dotnet publish --configuration Release --output ${BUILD_DIR}'
-                }
+                //Deploy application on IIS
+                bat 'net stop "w3svc"'
+                bat '"C:\\Program Files (x86)\\IIS\\Microsoft Web Deploy V3\\msdeploy.exe" -verb:sync -source:package="%WORKSPACE%\\JenkinsWebApplicationDemo\\bin\\Debug\\net6.0\\JenkinsWebApplicationDemo.zip" -dest:auto -setParam:"IIS Web Application Name"="Demo.Web" -skip:objectName=filePath,absolutePath=".\\\\PackagDemoeTmp\\\\Web.config$" -enableRule:DoNotDelete -allowUntrusted=true'
+                bat 'net start "w3svc"'
             }
-        }
-
-        stage('Deploy') {
-            steps {
-                // Deploy the application to the server
-                // This example assumes you’re using SCP for deployment; adjust as needed for your deployment method
-                script {
-                    sshagent(['deploy-key-id']) {
-                        sh 'scp -r ${BUILD_DIR} user@server:/path/to/deploy'
-                    }
-                }
-            }
-        }
-    }
-
-    post {
-        success {
-            echo 'Pipeline succeeded!'
-        }
-        failure {
-            echo 'Pipeline failed.'
         }
     }
 }
